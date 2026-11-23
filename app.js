@@ -13,7 +13,7 @@
   let S = null, META = null, C = [], LEGACY = [], N = 0, CID = [], PAIRS = [], OPEN = true;
   function applyConfig(cfg) {
     if (cfg.schemaVersion !== SCHEMA || cfg.criteria.length !== 4 || !Array.isArray(cfg.round1Criteria) || cfg.round1Criteria.length !== 6) throw new Error('schema_mismatch');
-    S = cfg; META = cfg.meta; C = cfg.criteria; LEGACY = cfg.round1Criteria; N = C.length; CID = C.map(c => c.id);
+    S = cfg; META = cfg.meta || { project: CFG.title || 'AI 기반 초연결 지능도시', title: CFG.subtitle || '전문가 조사', round: CFG.round ? CFG.round + '차' : '3차', period: CFG.surveyPeriod || '', nsvc: CFG.serviceCount || 40, institution: CFG.institution || '' }; C = cfg.criteria; LEGACY = cfg.round1Criteria; N = C.length; CID = C.map(c => c.id);
     S.services = CFG.services || [];
     PAIRS = [];
     for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) PAIRS.push([i, j]);
