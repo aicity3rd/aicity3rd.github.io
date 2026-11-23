@@ -559,18 +559,18 @@
     const myW = R2OWN ? computeAhpWeights(R2OWN.p2) : null;
     return h('div', { class: 'card r2-weight-summary', style: { marginBottom: '18px', padding: '18px 20px' } },
       h('h3', { style: { margin: '0 0 6px', fontSize: '17px' } }, '평가항목 가중치 AHP 쌍대비교 결과'),
-      h('p', { class: 'sub', style: { margin: '0 0 14px', color: '#5b6474' } }, '2차 조사(제출 100명 중 일관성 기준 CR≤0.1 충족 65명 통합)에서 산출된 평가항목별 가중치 평균' + (myW ? '과 위원님이 2차 때 응답하신 개인 가중치' : '') + '입니다. 이 결과를 참고하여 본인의 쌍대비교 응답을 이번 3차 조사에서 그대로 유지하실지, 재조정하실지 자유롭게 결정해 주십시오.'),
+      h('p', { class: 'sub', style: { margin: '0 0 14px', color: '#5b6474' } }, '2차 조사(제출 100명 중 일관성 기준 CR≤0.1 충족 65명 통합)에서 산출된 평가항목별 가중치 평균과 위원님이 2차 때 응답하신 개인 가중치입니다. 이 결과를 참고하여 본인의 쌍대비교 응답을 이번 3차 조사에서 그대로 유지하실지, 재조정하실지 자유롭게 결정해 주십시오.'),
       h('table', { class: 'r2-weight-table', style: { width: '100%', borderCollapse: 'collapse' } },
         h('thead', null, h('tr', null,
           h('th', { style: { textAlign: 'left', padding: '6px 8px', borderBottom: '1px solid #E3E7EC' } }, ''),
           h('th', { style: { textAlign: 'left', padding: '6px 8px', borderBottom: '1px solid #E3E7EC' } }, '평가항목'),
           h('th', { style: { textAlign: 'right', padding: '6px 8px', borderBottom: '1px solid #E3E7EC' } }, '2차 평균 가중치'),
-          myW ? h('th', { style: { textAlign: 'right', padding: '6px 8px', borderBottom: '1px solid #E3E7EC', color: '#2F7D57' } }, '나의 2차 응답') : null)),
+          h('th', { style: { textAlign: 'right', padding: '6px 8px', borderBottom: '1px solid #E3E7EC', color: '#2F7D57' } }, '나의 2차 응답'))),
         h('tbody', null, rows.map((r, idx) => h('tr', null,
           h('td', { style: { padding: '8px' } }, h('span', { class: 'badge' }, r[0])),
           h('td', { style: { padding: '8px' } }, r[1]),
           h('td', { style: { padding: '8px', textAlign: 'right', fontWeight: '700' } }, r[2]),
-          myW ? h('td', { style: { padding: '8px', textAlign: 'right', fontWeight: '700', color: '#2F7D57' } }, (myW[idx] * 100).toFixed(1) + '%') : null)))));
+          h('td', { style: { padding: '8px', textAlign: 'right', fontWeight: '700', color: '#2F7D57' } }, (myW ? (myW[idx] * 100).toFixed(1) : '0.0') + '%'))))));
   }
 
   function viewP2() {
@@ -841,14 +841,14 @@
           h('section', { class: 'card rate', 'aria-labelledby': 'rate-h' },
             s.r2score ? h('div', { class: 'r2-score-box', style: { margin: '0 0 18px', padding: '14px 16px', background: '#F3F6FB', borderRadius: '10px', maxWidth: '100%', boxSizing: 'border-box', overflow: 'hidden' } },
               h('h4', { style: { margin: '0 0 10px', fontSize: '14px' } }, '2차 설문 결과'),
-              h('div', { style: { display: 'grid', gridTemplateColumns: ((R2OWN && R2OWN.p3[s.id]) ? 'minmax(0,1fr) 52px 52px' : 'minmax(0,1fr) 52px'), rowGap: '7px', columnGap: '8px', alignItems: 'center', width: '100%' } },
+              h('div', { style: { display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 52px 52px', rowGap: '7px', columnGap: '8px', alignItems: 'center', width: '100%' } },
                 [h('div', { style: { display: 'contents' } },
                   h('span'), h('span', { style: { fontSize: '11px', color: '#8a93a3', textAlign: 'center' } }, '평균'),
-                  (R2OWN && R2OWN.p3[s.id]) ? h('span', { style: { fontSize: '11px', color: '#2F7D57', textAlign: 'center' } }, '나의 응답') : null)].concat(
+                  h('span', { style: { fontSize: '11px', color: '#2F7D57', textAlign: 'center' } }, '나의 응답'))].concat(
                 C.map(c => h('div', { style: { display: 'contents' } },
                   h('span', { style: { fontSize: '12.5px', lineHeight: '1.3', minWidth: 0, overflowWrap: 'break-word' } }, h('span', { class: 'badge' }, shortId(c.id)), ' ', c.name),
                   h('b', { style: { fontSize: '13px', textAlign: 'center' } }, (s.r2score[shortId(c.id)] || '-') + '점'),
-                  (R2OWN && R2OWN.p3[s.id]) ? h('b', { style: { fontSize: '13px', color: '#2F7D57', textAlign: 'center' } }, (R2OWN.p3[s.id][c.id] != null ? R2OWN.p3[s.id][c.id] + '점' : '-')) : null))))) : null,
+                  h('b', { style: { fontSize: '13px', color: '#2F7D57', textAlign: 'center' } }, ((R2OWN && R2OWN.p3[s.id] && R2OWN.p3[s.id][c.id] != null) ? R2OWN.p3[s.id][c.id] : 0) + '점')))))) : null,
             h('h3', { id: 'rate-h' }, '평가항목별 점수'),
             h('p', { class: 'sub' }, '카드 내용을 보고 이 서비스가 각 평가항목을 얼마나 충족하는지 선택해 주십시오.'),
             h('div', { class: 'rate-ends', 'aria-hidden': 'true' }, h('span'), h('div', null, h('span', null, '1 매우 낮음'), h('span', null, '3 보통'), h('span', null, '5 매우 높음'))),
