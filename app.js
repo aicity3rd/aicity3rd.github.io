@@ -774,7 +774,6 @@
           h('section', { class: 'card rate', 'aria-labelledby': 'rate-h' },
             h('h3', { id: 'rate-h' }, '평가항목별 점수'),
             h('p', { class: 'sub' }, '카드 내용을 보고 이 서비스가 각 평가항목을 얼마나 충족하는지 선택해 주십시오.'),
-            criteriaGuide(),
             h('div', { class: 'rate-ends', 'aria-hidden': 'true' }, h('span'), h('div', null, h('span', null, '1 매우 낮음'), h('span', null, '3 보통'), h('span', null, '5 매우 높음'))),
             h('div', { class: 'rrows' }, rows),
             doneMsg,
