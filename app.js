@@ -25,6 +25,7 @@
   const P1_LABELS = ['전혀 적절하지 않음', '적절하지 않음', '보통', '적절함', '매우 적절함'];
   const INT_SHORT = { 2: '', 3: '약간', 4: '', 5: '중요', 6: '', 7: '매우', 8: '', 9: '극히' };
   const INT_NAME = { 2: '동등~약간 중요 사이', 3: '약간 중요', 4: '약간 중요~중요 사이', 5: '중요', 6: '중요~매우 중요 사이', 7: '매우 중요', 8: '매우 중요~극히 중요 사이', 9: '극히 중요' };
+  const R2_AVG_W = { R3A: 19.8, R3B: 38.8, R3C: 14.9, R3D: 26.4 };
   const TOKEN_RE = /(?:^|[#?&])t=([A-Za-z0-9_-]{16,64})/;
   const R2_API = 'https://script.google.com/macros/s/AKfycbwAVlQ_A0c5luT9GMG43P1JghTzWE_CIB3ehfZUy3w32Ffg1JF5nqT8MjUs6DaQBDIy3w/exec';
   let R2OWN = null;
@@ -608,6 +609,30 @@
     };
   }
 
+  function pairRef(ci, cj, k) {
+    const aw = R2_AVG_W[ci.id] || 0, bw = R2_AVG_W[cj.id] || 0;
+    const maxW = Math.max(aw, bw, 1);
+    const mine = R2OWN && R2OWN.p2 ? R2OWN.p2[k] : null;
+    let mineText = '2차 응답 정보 없음';
+    if (mine) {
+      if (mine.side === 'E') mineText = '같음 (1)';
+      else if (mine.side === 'L' || mine.side === 'R') {
+        const [p, q] = mine.side === 'L' ? [ci, cj] : [cj, ci];
+        mineText = mine.v ? `${shortId(p.id)}가 ${shortId(q.id)}보다 '${INT_NAME[mine.v]}' (${mine.v})` : `${shortId(p.id)}가 더 중요`;
+      }
+    }
+    const barRow = (item, val, color, trackBg) => h('div', { style: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px' } },
+      h('span', { style: { width: '0', flex: '0 0 42%', flexShrink: '0', fontSize: '12px', color: '#48526a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }, badge(item.id), ' ', item.name),
+      h('div', { style: { flex: '1', height: '10px', background: trackBg, borderRadius: '6px', overflow: 'hidden' } },
+        h('div', { style: { width: Math.max(2, Math.min(100, (val / maxW) * 100)) + '%', height: '100%', background: color, borderRadius: '6px' } })),
+      h('b', { style: { width: '46px', flexShrink: '0', textAlign: 'right', fontSize: '12.5px', color: '#48526a' } }, val.toFixed(1) + '%'));
+    return h('div', { class: 'card p2-ref', style: { padding: '12px 14px', marginBottom: '10px', background: '#F7F9FC', border: '1px solid #E6EAF1' } },
+      h('div', { style: { fontSize: '11.5px', fontWeight: '700', color: '#8a93a3', marginBottom: '8px' } }, '참고 · 2차 조사 결과 (다른 위원들 평균 비중)'),
+      barRow(ci, aw, '#6b8fd6', '#e7edf8'),
+      barRow(cj, bw, '#6b8fd6', '#e7edf8'),
+      h('p', { style: { margin: '8px 0 0', fontSize: '12.5px', color: '#2F7D57', fontWeight: '700' } }, '위원님의 2차 응답: ', mineText));
+  }
+
   function pairCard(i, j, idx, onChange) {
     const k = pkey(i, j);
     const a = st.p2[k] || {};
@@ -639,6 +664,7 @@
     upd();
     return h('li', { class: 'card pair', id: `pair-${k}` },
       h('div', { class: 'pair-top' }, h('b', null, `비교 ${idx + 1} / ${PAIRS.length}`), stChip),
+      pairRef(ci, cj, k),
       h('fieldset', { class: 'sides' },
         h('legend', { class: 'sr' }, `비교 ${idx + 1}: ${ci.name}${wa(ci.name)} ${cj.name} 중 더 중요한 항목`),
         side('L', 'l', [badge(ci.id), h('span', null, ci.name)], `${ci.name} 쪽이 더 중요`),
