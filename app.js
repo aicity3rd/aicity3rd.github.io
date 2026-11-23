@@ -26,6 +26,47 @@
   const INT_SHORT = { 2: '', 3: '약간', 4: '', 5: '중요', 6: '', 7: '매우', 8: '', 9: '극히' };
   const INT_NAME = { 2: '동등~약간 중요 사이', 3: '약간 중요', 4: '약간 중요~중요 사이', 5: '중요', 6: '중요~매우 중요 사이', 7: '매우 중요', 8: '매우 중요~극히 중요 사이', 9: '극히 중요' };
   const TOKEN_RE = /(?:^|[#?&])t=([A-Za-z0-9_-]{16,64})/;
+  const R2_API = 'https://script.google.com/macros/s/AKfycbwAVlQ_A0c5luT9GMG43P1JghTzWE_CIB3ehfZUy3w32Ffg1JF5nqT8MjUs6DaQBDIy3w/exec';
+  let R2OWN = null;
+  async function loadR2Own(name, p4) {
+    try {
+      const r1 = await fetch(R2_API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'login', name, p4, schemaVersion: 'r2-4-v2' }) });
+      const j1 = await r1.json();
+      if (!j1 || !j1.ok || !j1.token) return;
+      const r2 = await fetch(R2_API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'load', token: j1.token, schemaVersion: 'r2-4-v2' }) });
+      const j2 = await r2.json();
+      const saved = j2 && j2.saved;
+      if (!saved) return;
+      const remap = { R2A: 'R3A', R2B: 'R3B', R2C: 'R3C', R2D: 'R3D' };
+      const p2r = {};
+      Object.keys(saved.p2 || {}).forEach(k => { const [a, b] = k.split(':'); p2r[(remap[a] || a) + ':' + (remap[b] || b)] = saved.p2[k]; });
+      const p3r = {};
+      Object.keys(saved.p3 || {}).forEach(sid => { const row = saved.p3[sid] || {}; const nrow = {}; Object.keys(row).forEach(k => { nrow[remap[k] || k] = row[k]; }); p3r[sid] = nrow; });
+      R2OWN = { p2: p2r, p3: p3r };
+      render();
+    } catch (e) { /* 2차 응답 없음 또는 연결 실패: 조용히 무시 */ }
+  }
+  function computeAhpWeights(p2obj) {
+    if (!p2obj) return null;
+    const A = [];
+    for (let i = 0; i < N; i++) { A.push([]); for (let j = 0; j < N; j++) A[i].push(i === j ? 1 : 0); }
+    for (const [i, j] of PAIRS) {
+      const a = p2obj[pkey(i, j)];
+      if (!a) return null;
+      const x = a.side === 'L' ? a.v : a.side === 'R' ? 1 / a.v : 1;
+      A[i][j] = x; A[j][i] = 1 / x;
+    }
+    let w = new Array(N).fill(1 / N);
+    for (let it = 0; it < 500; it++) {
+      const nw = A.map(row => row.reduce((s, v, k) => s + v * w[k], 0));
+      const sum = nw.reduce((a, b) => a + b, 0);
+      const nn = nw.map(v => v / sum);
+      const diff = nn.reduce((s, v, k) => s + Math.abs(v - w[k]), 0);
+      w = nn;
+      if (diff < 1e-13) break;
+    }
+    return w;
+  }
   const SKEY = 'delphi3:r3-4-v1:token';
   const KEY = t => 'delphi3:r3-4-v1:' + t;
 
@@ -514,18 +555,21 @@
       ['C', 'AI 적용 실효성·고도화 가능성', '14.9%'],
       ['D', '서비스 확산·운영 지속가능성', '26.4%']
     ];
+    const myW = R2OWN ? computeAhpWeights(R2OWN.p2) : null;
     return h('div', { class: 'card r2-weight-summary', style: { marginBottom: '18px', padding: '18px 20px' } },
       h('h3', { style: { margin: '0 0 6px', fontSize: '17px' } }, '평가항목 가중치 AHP 쌍대비교 결과'),
-      h('p', { class: 'sub', style: { margin: '0 0 14px', color: '#5b6474' } }, '2차 조사(제출 100명 중 일관성 기준 CR≤0.1 충족 65명 통합)에서 산출된 평가항목별 가중치 평균입니다. 이 결과를 참고하여 본인의 쌍대비교 응답을 이번 3차 조사에서 그대로 유지하실지, 재조정하실지 자유롭게 결정해 주십시오.'),
+      h('p', { class: 'sub', style: { margin: '0 0 14px', color: '#5b6474' } }, '2차 조사(제출 100명 중 일관성 기준 CR≤0.1 충족 65명 통합)에서 산출된 평가항목별 가중치 평균' + (myW ? '과 위원님이 2차 때 응답하신 개인 가중치' : '') + '입니다. 이 결과를 참고하여 본인의 쌍대비교 응답을 이번 3차 조사에서 그대로 유지하실지, 재조정하실지 자유롭게 결정해 주십시오.'),
       h('table', { class: 'r2-weight-table', style: { width: '100%', borderCollapse: 'collapse' } },
         h('thead', null, h('tr', null,
           h('th', { style: { textAlign: 'left', padding: '6px 8px', borderBottom: '1px solid #E3E7EC' } }, ''),
           h('th', { style: { textAlign: 'left', padding: '6px 8px', borderBottom: '1px solid #E3E7EC' } }, '평가항목'),
-          h('th', { style: { textAlign: 'right', padding: '6px 8px', borderBottom: '1px solid #E3E7EC' } }, '2차 평균 가중치'))),
-        h('tbody', null, rows.map(r => h('tr', null,
+          h('th', { style: { textAlign: 'right', padding: '6px 8px', borderBottom: '1px solid #E3E7EC' } }, '2차 평균 가중치'),
+          myW ? h('th', { style: { textAlign: 'right', padding: '6px 8px', borderBottom: '1px solid #E3E7EC', color: '#2F7D57' } }, '나의 2차 응답') : null)),
+        h('tbody', null, rows.map((r, idx) => h('tr', null,
           h('td', { style: { padding: '8px' } }, h('span', { class: 'badge' }, r[0])),
           h('td', { style: { padding: '8px' } }, r[1]),
-          h('td', { style: { padding: '8px', textAlign: 'right', fontWeight: '700' } }, r[2]))))));
+          h('td', { style: { padding: '8px', textAlign: 'right', fontWeight: '700' } }, r[2]),
+          myW ? h('td', { style: { padding: '8px', textAlign: 'right', fontWeight: '700', color: '#2F7D57' } }, (myW[idx] * 100).toFixed(1) + '%') : null)))));
   }
 
   function viewP2() {
@@ -796,10 +840,14 @@
           h('section', { class: 'card rate', 'aria-labelledby': 'rate-h' },
             s.r2score ? h('div', { class: 'r2-score-box', style: { margin: '0 0 18px', padding: '14px 16px', background: '#F3F6FB', borderRadius: '10px' } },
               h('h4', { style: { margin: '0 0 10px', fontSize: '14px' } }, '2차 설문 결과'),
-              h('div', { style: { display: 'grid', gridTemplateColumns: '1fr auto', rowGap: '6px', columnGap: '12px' } },
+              h('div', { style: { display: 'grid', gridTemplateColumns: (R2OWN && R2OWN.p3[s.id] ? '1fr auto auto' : '1fr auto'), rowGap: '6px', columnGap: '12px' } },
+                [h('div', { style: { display: 'contents' } },
+                  h('span'), h('span', { style: { fontSize: '12px', color: '#8a93a3' } }, '평균'),
+                  (R2OWN && R2OWN.p3[s.id]) ? h('span', { style: { fontSize: '12px', color: '#2F7D57' } }, '나의 응답') : null)].concat(
                 C.map(c => h('div', { style: { display: 'contents' } },
                   h('span', null, h('span', { class: 'badge' }, shortId(c.id)), ' ', c.name),
-                  h('b', null, (s.r2score[shortId(c.id)] || '-') + '점'))))) : null,
+                  h('b', null, (s.r2score[shortId(c.id)] || '-') + '점'),
+                  (R2OWN && R2OWN.p3[s.id]) ? h('b', { style: { color: '#2F7D57' } }, (R2OWN.p3[s.id][c.id] != null ? R2OWN.p3[s.id][c.id] + '점' : '-')) : null))))) : null,
             h('h3', { id: 'rate-h' }, '평가항목별 점수'),
             h('p', { class: 'sub' }, '카드 내용을 보고 이 서비스가 각 평가항목을 얼마나 충족하는지 선택해 주십시오.'),
             h('div', { class: 'rate-ends', 'aria-hidden': 'true' }, h('span'), h('div', null, h('span', null, '1 매우 낮음'), h('span', null, '3 보통'), h('span', null, '5 매우 높음'))),
@@ -940,7 +988,7 @@
       let r;
       try { r = await Api.login(nm.value, p4.value); } catch (e) { r = { ok: false, error: 'network' }; }
       btn.disabled = false; btn.firstChild.textContent = '내 설문 열기';
-      if (r && r.ok) { try { sessionStorage.setItem(SKEY, r.token); } catch (e) { /* 무시 */ } boot(); return; }
+      if (r && r.ok) { try { sessionStorage.setItem(SKEY, r.token); } catch (e) { /* 무시 */ } loadR2Own(nm.value, p4.value); boot(); return; }
       const e = r && r.error;
       msgEl.textContent = e === 'nomatch' ? `일치하는 정보가 없습니다. 1차 조사 때 적은 성명과 휴대폰 번호인지 확인해 주십시오. (남은 시도 ${r.left}회)`
         : e === 'locked' ? '확인에 5번 실패해 5분 동안 잠겼습니다. 정보가 맞는데도 안 되면 연구진에 문의해 주십시오.'
