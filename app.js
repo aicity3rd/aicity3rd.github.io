@@ -10,7 +10,7 @@
 
   const CFG = window.SURVEY_CONFIG || {};
   const SCHEMA = 'r3-4-v1';
-  let S = null, META = null, C = [], LEGACY = [], N = 0, CID = [], PAIRS = [], OPEN = true;
+  let S = null, META = { project: (window.SURVEY_CONFIG || {}).title || 'AI 기반 초연결 지능도시', title: (window.SURVEY_CONFIG || {}).subtitle || '전문가 조사', round: ((window.SURVEY_CONFIG || {}).round ? (window.SURVEY_CONFIG || {}).round + '차' : '3차'), period: (window.SURVEY_CONFIG || {}).surveyPeriod || '', nsvc: (window.SURVEY_CONFIG || {}).serviceCount || 40, institution: (window.SURVEY_CONFIG || {}).institution || '' }, C = [], LEGACY = [], N = 0, CID = [], PAIRS = [], OPEN = true;
   function applyConfig(cfg) {
     if (cfg.schemaVersion !== SCHEMA || cfg.criteria.length !== 4 || !Array.isArray(cfg.round1Criteria) || cfg.round1Criteria.length !== 6) throw new Error('schema_mismatch');
     S = cfg; META = cfg.meta || { project: CFG.title || 'AI 기반 초연결 지능도시', title: CFG.subtitle || '전문가 조사', round: CFG.round ? CFG.round + '차' : '3차', period: CFG.surveyPeriod || '', nsvc: CFG.serviceCount || 40, institution: CFG.institution || '' }; C = cfg.criteria; LEGACY = cfg.round1Criteria; N = C.length; CID = C.map(c => c.id);
