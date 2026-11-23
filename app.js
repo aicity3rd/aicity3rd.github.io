@@ -14,7 +14,7 @@
   function applyConfig(cfg) {
     if (cfg.schemaVersion !== SCHEMA || cfg.criteria.length !== 4 || !Array.isArray(cfg.round1Criteria) || cfg.round1Criteria.length !== 6) throw new Error('schema_mismatch');
     S = cfg; META = cfg.meta; C = cfg.criteria; LEGACY = cfg.round1Criteria; N = C.length; CID = C.map(c => c.id);
-    S.services = [];
+    S.services = CFG.services || [];
     PAIRS = [];
     for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) PAIRS.push([i, j]);
   }
