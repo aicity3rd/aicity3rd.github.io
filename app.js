@@ -138,7 +138,7 @@
   const p1ItemCount = () => CID.filter(id => st.p1[id] && st.p1[id].score).length;
   const p1Count = () => p1ItemCount() + (st.overallScore >= 1 && st.overallScore <= 5 ? 1 : 0);
   const P1TOTAL = () => N + 1;
-  const shortId = id => String(id).replace(/^R2/, '');
+  const shortId = id => String(id).replace(/^R[0-9]/, '');
   const wa = s => { const c = String(s).charCodeAt(String(s).length - 1); return c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 ? '과' : '와'; };
   const pairDone = k => { const a = st.p2[k]; return !!a && (a.side === 'E' || (!!a.side && !!a.v)); };
   const p2Count = () => PAIRS.filter(([i, j]) => pairDone(pkey(i, j))).length;
@@ -832,7 +832,7 @@
             [miss1.length ? h('div', { class: 'missing' }, miss1.map(c => h('button', { type: 'button', onclick: () => { st.p1stage = 1; go('p1', () => { const el = document.getElementById('p1-' + c.id); if (el) el.scrollIntoView({ block: 'start' }); }); } }, shortId(c.id) + ' ' + c.name))) : null,
               !st.overallScore ? h('div', { class: 'missing' }, h('button', { type: 'button', onclick: () => p1Go(1) }, '전체 구성의 적절성')) : null]),
           card('2부 평가항목 중요도', okChip(c2 === PAIRS.length), `${c2}/${PAIRS.length} 비교` + (r ? ` · 일관성 비율 ${r.CR.toFixed(3)} (${r.CR <= 0.1 ? '기준 충족' : '기준 0.1 초과'})` : ''), '2부 보기', () => go('p2'),
-            miss2.length ? h('div', { class: 'missing' }, miss2.map(p => h('button', { type: 'button', onclick: () => go('p2', () => jumpPair(pkey(p.i, p.j))) }, `비교 ${p.idx + 1} · ${CID[p.i]}↔${CID[p.j]}`))) : null),
+            miss2.length ? h('div', { class: 'missing' }, miss2.map(p => h('button', { type: 'button', onclick: () => go('p2', () => jumpPair(pkey(p.i, p.j))) }, `비교 ${p.idx + 1} · ${shortId(CID[p.i])}↔${shortId(CID[p.j])}`))) : null),
           card('3부 후보 서비스 평가', okChip(c3 === ORDER.length), `${c3}/${ORDER.length} 서비스 완료 · 점수 ${p3Ratings()}/${ORDER.length * N}개 선택`, '3부 보기', () => { st.p3view = 'list'; go('p3'); },
             miss3.length ? h('div', { class: 'missing' }, miss3.slice(0, 40).map(o => h('button', { type: 'button', onclick: () => openSvc(o.idx) }, `${o.idx + 1}. ${o.s.name} (${svcCount(o.s.id)}/${N})`))) : null)),
         h('section', { class: 'card submit-box' },
