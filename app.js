@@ -1,4 +1,5 @@
-S.services = CFG.services || [];  if (CFG.surveyPeriod) META.period = CFG.surveyPeriod; S.services = CFG.services || [];
+적절성 · 중요도 · 서비스  중요도 재평가 · 후보서비스
+  S.services = CFG.services || [];  if (CFG.surveyPeriod) META.period = CFG.surveyPeriod; S.services = CFG.services || [];
 1차 결과와 2차 설문  2차 결과와 3차 설문/*
  * 3차 전문가 조사 (델파이) 웹 설문 - 재평가
  * - 외부 라이브러리·CDN·분석 도구 없음 (보안 심사와 기관망 차단 위험 최소화)
