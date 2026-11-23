@@ -997,7 +997,7 @@
     st.submittedAt = server ? server.submittedAt || null : null;
     st.receipt = server ? server.receipt || null : null;
     if (!st.submittedAt) st.editedAfterSubmit = false;
-    S.imgKey = res.imgKey || '';
+    S.imgKey = res.imgKey || CFG.imgKey || '';
     S.services = (Array.isArray(res.services) && res.services.length > 0) ? res.services.map(x => Object.assign({}, x, { images: (x.images || []).map(src => ({ src })) })) : (CFG.services || []).map(x => Object.assign({}, x, { images: (x.images || []).map(src => ({ src })) }));
     ORDER = shuffled(S.services, hashStr(token));
     st.p3cur = Math.min(st.p3cur || 0, Math.max(0, ORDER.length - 1));
