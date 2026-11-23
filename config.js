@@ -2,7 +2,16 @@
 window.SURVEY_CONFIG = {
   api: 'https://script.google.com/macros/s/AKfycbzMcDsTrEyNkmbYX60C0R9_kywvCkY185VAqnrAN3zJIQPYQfwxgRTT0Xz_MYSiXvc6Fg/exec',
   
-  /* 40종 후보 서비스 데이터 (PDF 기반) */
+  
+  /* 조사 메타데이터 */
+  title: 'AI 기반 초연결 지능도시',
+  subtitle: '전문가 조사',
+  round: 3,
+  surveyPeriod: '2026년 11월 24일부터 26일까지',
+  serviceCount: 40,
+  institution: 'AI 기반 초연결 지능도시',
+  
+/* 40종 후보 서비스 데이터 (PDF 기반) */
   services: [
     { id: 'S01', no: 1, name: 'AI 기반 주차데이터 통합분석 서비스', cat: '행정', summary: '도시 주차 관련 공공데이터를 연계·분석하여 도시 전체 주차 상황에 대한 분석 데이터를 제공하고, 불법 주정차 단속 업무의 의사결정을 지원하는 AI 서비스' },
     { id: 'S02', no: 2, name: 'AI 다중운집 안전도시 서비스', cat: '방범·방재', summary: '다중운집 발생이 예상되거나 발생한 지역에 대한 선제적 위험 감지와 운집 발생시 현장 상황을 신속·정확하게 분석·전파하여 선제적 위험감지 및 신속·정확한 대응을 지원하는 AI 서비스' },
