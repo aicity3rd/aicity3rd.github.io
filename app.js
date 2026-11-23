@@ -68,6 +68,7 @@
     return w;
   }
   const SKEY = 'delphi3:r3-4-v1:token';
+  const R2CKEY = 'delphi3:r3-4-v1:r2cred';
   const KEY = t => 'delphi3:r3-4-v1:' + t;
 
   /* ---------- 서버 통신 (구글 앱스 스크립트 웹앱) ---------- */
@@ -966,7 +967,7 @@
   }
 
   /* ---------- 입장 화면 (공통 주소: 성명 + 휴대폰 뒷 4자리) ---------- */
-  function logout() { clearTimeout(saveTimer); if (dirty && token && st && OPEN) Api.beacon(token, st); try { sessionStorage.removeItem(SKEY); } catch (e) { /* 무시 */ } token = null; st = null; dirty = false; renderGate(); }
+  function logout() { clearTimeout(saveTimer); if (dirty && token && st && OPEN) Api.beacon(token, st); try { sessionStorage.removeItem(SKEY); sessionStorage.removeItem(R2CKEY); } catch (e) { /* 무시 */ } token = null; st = null; R2OWN = null; dirty = false; renderGate(); }
   function renderGate(invalid, msg) {
     ui.steps = null; ui.mid = null; ui.save = null; st = null;
     const nm = h('input', { id: 'lg-name', type: 'text', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', maxlength: '40', placeholder: '예: 홍길동', 'aria-describedby': 'lg-msg' });
@@ -988,7 +989,7 @@
       let r;
       try { r = await Api.login(nm.value, p4.value); } catch (e) { r = { ok: false, error: 'network' }; }
       btn.disabled = false; btn.firstChild.textContent = '내 설문 열기';
-      if (r && r.ok) { try { sessionStorage.setItem(SKEY, r.token); } catch (e) { /* 무시 */ } loadR2Own(nm.value, p4.value); boot(); return; }
+      if (r && r.ok) { try { sessionStorage.setItem(SKEY, r.token); sessionStorage.setItem(R2CKEY, JSON.stringify({ name: nm.value, p4: p4.value })); } catch (e) { /* 무시 */ } loadR2Own(nm.value, p4.value); boot(); return; }
       const e = r && r.error;
       msgEl.textContent = e === 'nomatch' ? `일치하는 정보가 없습니다. 1차 조사 때 적은 성명과 휴대폰 번호인지 확인해 주십시오. (남은 시도 ${r.left}회)`
         : e === 'locked' ? '확인에 5번 실패해 5분 동안 잠겼습니다. 정보가 맞는데도 안 되면 연구진에 문의해 주십시오.'
@@ -1051,6 +1052,7 @@
     }
     token = readToken();
     if (!token) { renderGate(false); return; }
+    if (!R2OWN) { try { const c = JSON.parse(sessionStorage.getItem(R2CKEY) || 'null'); if (c && c.name && c.p4) loadR2Own(c.name, c.p4); } catch (e) { /* 무시 */ } }
     renderBoot('위원님의 설문을 불러오는 중입니다…');
     let res = null;
     try { res = await Api.load(token); } catch (e) { res = { ok: false, error: 'network' }; }
