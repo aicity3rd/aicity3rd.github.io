@@ -549,28 +549,39 @@
   }
 
   /* ---------- 2부: AHP 쌍대비교 ---------- */
+  function cmpBarRow(avgVal, myVal, maxVal, fmt) {
+    const avgPct = maxVal > 0 ? Math.max(2, Math.min(100, (avgVal / maxVal) * 100)) : 0;
+    const myPct = maxVal > 0 ? Math.max(2, Math.min(100, (myVal / maxVal) * 100)) : 0;
+    const bar = (pct, color, trackBg) => h('div', { style: { flex: '1', height: '11px', background: trackBg, borderRadius: '6px', overflow: 'hidden' } },
+      h('div', { style: { width: pct + '%', height: '100%', background: color, borderRadius: '6px' } }));
+    return h('div', { style: { display: 'grid', rowGap: '5px' } },
+      h('div', { style: { display: 'flex', alignItems: 'center', gap: '8px' } },
+        h('span', { style: { width: '58px', flexShrink: '0', fontSize: '11px', color: '#8a93a3' } }, '평균'),
+        bar(avgPct, '#9aa6ba', '#eef1f6'),
+        h('b', { style: { width: '58px', flexShrink: '0', textAlign: 'right', fontSize: '13px', color: '#424c5c' } }, fmt(avgVal))),
+      h('div', { style: { display: 'flex', alignItems: 'center', gap: '8px' } },
+        h('span', { style: { width: '58px', flexShrink: '0', fontSize: '11px', color: '#2F7D57' } }, '나의 응답'),
+        bar(myPct, '#2F7D57', '#e4f2ea'),
+        h('b', { style: { width: '58px', flexShrink: '0', textAlign: 'right', fontSize: '13px', color: '#2F7D57' } }, fmt(myVal))));
+  }
+
   function r2WeightSummary() {
     const rows = [
-      ['A', '데이터 연계·표준화 가능성', '19.8%'],
-      ['B', '도시·시민 서비스 효과성', '38.8%'],
-      ['C', 'AI 적용 실효성·고도화 가능성', '14.9%'],
-      ['D', '서비스 확산·운영 지속가능성', '26.4%']
+      ['A', '데이터 연계·표준화 가능성', 19.8],
+      ['B', '도시·시민 서비스 효과성', 38.8],
+      ['C', 'AI 적용 실효성·고도화 가능성', 14.9],
+      ['D', '서비스 확산·운영 지속가능성', 26.4]
     ];
     const myW = R2OWN ? computeAhpWeights(R2OWN.p2) : null;
+    const myVals = rows.map((r, idx) => myW ? myW[idx] * 100 : 0);
+    const maxVal = Math.max.apply(null, rows.map(r => r[2]).concat(myVals).concat([1]));
     return h('div', { class: 'card r2-weight-summary', style: { marginBottom: '18px', padding: '18px 20px' } },
       h('h3', { style: { margin: '0 0 6px', fontSize: '17px' } }, '평가항목 가중치 AHP 쌍대비교 결과'),
-      h('p', { class: 'sub', style: { margin: '0 0 14px', color: '#5b6474' } }, '2차 조사(제출 100명 중 일관성 기준 CR≤0.1 충족 65명 통합)에서 산출된 평가항목별 가중치 평균과 위원님이 2차 때 응답하신 개인 가중치입니다. 이 결과를 참고하여 본인의 쌍대비교 응답을 이번 3차 조사에서 그대로 유지하실지, 재조정하실지 자유롭게 결정해 주십시오.'),
-      h('table', { class: 'r2-weight-table', style: { width: '100%', borderCollapse: 'collapse' } },
-        h('thead', null, h('tr', null,
-          h('th', { style: { textAlign: 'left', padding: '6px 8px', borderBottom: '1px solid #E3E7EC' } }, ''),
-          h('th', { style: { textAlign: 'left', padding: '6px 8px', borderBottom: '1px solid #E3E7EC' } }, '평가항목'),
-          h('th', { style: { textAlign: 'right', padding: '6px 8px', borderBottom: '1px solid #E3E7EC' } }, '2차 평균 가중치'),
-          h('th', { style: { textAlign: 'right', padding: '6px 8px', borderBottom: '1px solid #E3E7EC', color: '#2F7D57' } }, '나의 2차 응답'))),
-        h('tbody', null, rows.map((r, idx) => h('tr', null,
-          h('td', { style: { padding: '8px' } }, h('span', { class: 'badge' }, r[0])),
-          h('td', { style: { padding: '8px' } }, r[1]),
-          h('td', { style: { padding: '8px', textAlign: 'right', fontWeight: '700' } }, r[2]),
-          h('td', { style: { padding: '8px', textAlign: 'right', fontWeight: '700', color: '#2F7D57' } }, (myW ? (myW[idx] * 100).toFixed(1) : '0.0') + '%'))))));
+      h('p', { class: 'sub', style: { margin: '0 0 14px', color: '#5b6474' } }, '2차 조사(제출 100명 중 일관성 기준 CR≤0.1 충족 65명 통합)에서 산출된 평가항목별 가중치 평균과 위원님이 2차 때 응답하신 개인 가중치입니다. 막대가 길수록 더 중요하게 평가한 항목입니다. 이 결과를 참고하여 본인의 쌍대비교 응답을 이번 3차 조사에서 그대로 유지하실지, 재조정하실지 자유롭게 결정해 주십시오.'),
+      h('div', { style: { display: 'grid', rowGap: '16px' } }, rows.map((r, idx) => h('div', null,
+        h('div', { style: { display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' } },
+          h('span', { class: 'badge' }, r[0]), h('span', { style: { fontSize: '13.5px', fontWeight: '600' } }, r[1])),
+        cmpBarRow(r[2], myVals[idx], maxVal, v => v.toFixed(1) + '%')))));
   }
 
   function viewP2() {
@@ -841,14 +852,13 @@
           h('section', { class: 'card rate', 'aria-labelledby': 'rate-h' },
             s.r2score ? h('div', { class: 'r2-score-box', style: { margin: '0 0 18px', padding: '14px 16px', background: '#F3F6FB', borderRadius: '10px', maxWidth: '100%', boxSizing: 'border-box', overflow: 'hidden' } },
               h('h4', { style: { margin: '0 0 10px', fontSize: '14px' } }, '2차 설문 결과'),
-              h('div', { style: { display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 52px 52px', rowGap: '7px', columnGap: '8px', alignItems: 'center', width: '100%' } },
-                [h('div', { style: { display: 'contents' } },
-                  h('span'), h('span', { style: { fontSize: '11px', color: '#8a93a3', textAlign: 'center' } }, '평균'),
-                  h('span', { style: { fontSize: '11px', color: '#2F7D57', textAlign: 'center' } }, '나의 응답'))].concat(
-                C.map(c => h('div', { style: { display: 'contents' } },
-                  h('span', { style: { fontSize: '12.5px', lineHeight: '1.3', minWidth: 0, overflowWrap: 'break-word' } }, h('span', { class: 'badge' }, shortId(c.id)), ' ', c.name),
-                  h('b', { style: { fontSize: '13px', textAlign: 'center' } }, (s.r2score[shortId(c.id)] || '-') + '점'),
-                  h('b', { style: { fontSize: '13px', color: '#2F7D57', textAlign: 'center' } }, ((R2OWN && R2OWN.p3[s.id] && R2OWN.p3[s.id][c.id] != null) ? R2OWN.p3[s.id][c.id] : 0) + '점')))))) : null,
+              h('div', { style: { display: 'grid', rowGap: '12px' } }, C.map(c => {
+                const avgV = Number(s.r2score[shortId(c.id)]) || 0;
+                const myV = (R2OWN && R2OWN.p3[s.id] && R2OWN.p3[s.id][c.id] != null) ? Number(R2OWN.p3[s.id][c.id]) : 0;
+                return h('div', null,
+                  h('div', { style: { fontSize: '12.5px', lineHeight: '1.3', marginBottom: '5px' } }, h('span', { class: 'badge' }, shortId(c.id)), ' ', c.name),
+                  cmpBarRow(avgV, myV, 5, v => v ? v.toFixed(1) + '점' : '-'));
+              }))) : null,
             h('h3', { id: 'rate-h' }, '평가항목별 점수'),
             h('p', { class: 'sub' }, '카드 내용을 보고 이 서비스가 각 평가항목을 얼마나 충족하는지 선택해 주십시오.'),
             h('div', { class: 'rate-ends', 'aria-hidden': 'true' }, h('span'), h('div', null, h('span', null, '1 매우 낮음'), h('span', null, '3 보통'), h('span', null, '5 매우 높음'))),
