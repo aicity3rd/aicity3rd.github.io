@@ -507,6 +507,27 @@
   }
 
   /* ---------- 2부: AHP 쌍대비교 ---------- */
+  function r2WeightSummary() {
+    const rows = [
+      ['A', '데이터 연계·표준화 가능성', '19.8%'],
+      ['B', '도시·시민 서비스 효과성', '38.8%'],
+      ['C', 'AI 적용 실효성·고도화 가능성', '14.9%'],
+      ['D', '서비스 확산·운영 지속가능성', '26.4%']
+    ];
+    return h('div', { class: 'card r2-weight-summary', style: { marginBottom: '18px', padding: '18px 20px' } },
+      h('h3', { style: { margin: '0 0 6px', fontSize: '17px' } }, '평가항목 가중치 AHP 쌍대비교 결과'),
+      h('p', { class: 'sub', style: { margin: '0 0 14px', color: '#5b6474' } }, '2차 조사(제출 100명 중 일관성 기준 CR≤0.1 충족 65명 통합)에서 산출된 평가항목별 가중치 평균입니다. 이 결과를 참고하여 본인의 쌍대비교 응답을 이번 3차 조사에서 그대로 유지하실지, 재조정하실지 자유롭게 결정해 주십시오.'),
+      h('table', { class: 'r2-weight-table', style: { width: '100%', borderCollapse: 'collapse' } },
+        h('thead', null, h('tr', null,
+          h('th', { style: { textAlign: 'left', padding: '6px 8px', borderBottom: '1px solid #E3E7EC' } }, ''),
+          h('th', { style: { textAlign: 'left', padding: '6px 8px', borderBottom: '1px solid #E3E7EC' } }, '평가항목'),
+          h('th', { style: { textAlign: 'right', padding: '6px 8px', borderBottom: '1px solid #E3E7EC' } }, '2차 평균 가중치'))),
+        h('tbody', null, rows.map(r => h('tr', null,
+          h('td', { style: { padding: '8px' } }, h('span', { class: 'badge' }, r[0])),
+          h('td', { style: { padding: '8px' } }, r[1]),
+          h('td', { style: { padding: '8px', textAlign: 'right', fontWeight: '700' } }, r[2]))))));
+  }
+
   function viewP2() {
     const panel = h('aside', { class: 'card ahp', 'aria-label': '현재 응답 기준 중요도와 일관성' });
     const fill = () => fillAhp(panel);
@@ -514,6 +535,7 @@
     fill();
     return {
       body: [
+        r2WeightSummary(),
         pageHead('1부 · 평가항목 중요도 재평가 (쌍대비교)', '두 항목 중 더 중요한 쪽을 골라 주십시오',
           '우수 서비스를 선정할 때 두 평가항목 중 어느 쪽이 더 중요한지 고르고, 얼마나 더 중요한지 선택해 주십시오. 6개 비교를 모두 마치면 응답의 일관성 비율(CR)이 바로 계산되며, 0.1 이하이면 일관된 응답으로 봅니다.'),
         h('div', { class: 'guide', 'aria-label': '척도 안내' },
