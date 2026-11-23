@@ -1,6 +1,4 @@
-적절성 · 중요도 · 서비스  중요도 재평가 · 후보서비스
-  S.services = CFG.services || [];  if (CFG.surveyPeriod) META.period = CFG.surveyPeriod; S.services = CFG.services || [];
-1차 결과와 2차 설문  2차 결과와 3차 설문/*
+/*
  * 3차 전문가 조사 (델파이) 웹 설문 - 재평가
  * - 외부 라이브러리·CDN·분석 도구 없음 (보안 심사와 기관망 차단 위험 최소화)
  * - 화면에 넣는 모든 글자는 textContent로만 넣음 (스크립트 삽입 방지)
@@ -15,8 +13,8 @@
   let S = null, META = { project: (window.SURVEY_CONFIG || {}).title || 'AI 기반 초연결 지능도시', title: (window.SURVEY_CONFIG || {}).subtitle || '전문가 조사', round: ((window.SURVEY_CONFIG || {}).round ? (window.SURVEY_CONFIG || {}).round + '차' : '3차'), period: (window.SURVEY_CONFIG || {}).surveyPeriod || '', nsvc: (window.SURVEY_CONFIG || {}).serviceCount || 40, institution: (window.SURVEY_CONFIG || {}).institution || '' }, C = [], LEGACY = [], N = 0, CID = [], PAIRS = [], OPEN = true;
   function applyConfig(cfg) {
     if (cfg.schemaVersion !== SCHEMA || cfg.criteria.length !== 4 || !Array.isArray(cfg.round1Criteria) || cfg.round1Criteria.length !== 6) throw new Error('schema_mismatch');
-    S = cfg; META = cfg.meta || { project: CFG.title || 'AI 기반 초연결 지능도시', title: CFG.subtitle || '전문가 조사', round: CFG.round ? CFG.round + '차' : '3차', period: CFG.surveyPeriod || '', nsvc: CFG.serviceCount || 40, institution: CFG.institution || '' }; C = cfg.criteria; LEGACY = cfg.round1Criteria; N = C.length; CID = C.map(c => c.id);
-    S.services = CFG.services || [];
+    S = cfg; META = cfg.meta; C = cfg.criteria; LEGACY = cfg.round1Criteria; N = C.length; CID = C.map(c => c.id);
+    if (CFG.surveyPeriod) META.period = CFG.surveyPeriod; S.services = CFG.services || [];
     PAIRS = [];
     for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) PAIRS.push([i, j]);
   }
@@ -934,10 +932,10 @@
           h('p', { class: 'gv-eyebrow' }, `${META.project} · ${META.title}`),
           h('h1', { id: 'pageTitle', tabindex: '-1' }, `${META.round} 전문가 조사`),
           h('p', { class: 'gv-lead' }, '전문가 의견을 반영해 통합·조정한 4개 평가항목의 적절성과 중요도, 후보 서비스에 대한 의견을 여쭙습니다.'),
-          h('ul', { class: 'gv-facts' }, fact('조사 기간', META.period), fact('구성', `적절성 · 중요도 · 서비스 ${META.nsvc}종`))),
+          h('ul', { class: 'gv-facts' }, fact('조사 기간', META.period), fact('구성', `중요도 재평가 · 후보서비스 ${META.nsvc}종`))),
         h('div', { class: 'gate-form' },
           h('h2', { class: 'gf-title' }, msg ? '나가기 완료' : '본인 확인'),
-          h('p', { class: 'gf-sub' }, msg || '확인 후 위원님의 1차 결과와 2차 설문이 열립니다.'),
+          h('p', { class: 'gf-sub' }, msg || '확인 후 위원님의 2차 결과와 3차 설문이 열립니다.'),
           notice,
           msg ? h('button', { class: 'btn', type: 'button', style: { marginTop: '18px' }, onclick: () => renderGate() }, '다시 들어가기') : form,
           META.contact ? h('p', { class: 'note', style: { marginTop: '14px' } }, `문의: ${META.contact}`) : null)))), footer());
