@@ -794,6 +794,12 @@
         h('div', { class: 'svc svc-rich' },
           h('article', { class: 'card svc-card', 'aria-labelledby': 'pageTitle' }, band, h('div', { class: 'svc-body' }, body)),
           h('section', { class: 'card rate', 'aria-labelledby': 'rate-h' },
+            s.r2score ? h('div', { class: 'r2-score-box', style: { margin: '0 0 18px', padding: '14px 16px', background: '#F3F6FB', borderRadius: '10px' } },
+              h('h4', { style: { margin: '0 0 10px', fontSize: '14px' } }, '2차 설문 결과'),
+              h('div', { style: { display: 'grid', gridTemplateColumns: '1fr auto', rowGap: '6px', columnGap: '12px' } },
+                C.map(c => h('div', { style: { display: 'contents' } },
+                  h('span', null, h('span', { class: 'badge' }, shortId(c.id)), ' ', c.name),
+                  h('b', null, (s.r2score[shortId(c.id)] || '-') + '점'))))) : null,
             h('h3', { id: 'rate-h' }, '평가항목별 점수'),
             h('p', { class: 'sub' }, '카드 내용을 보고 이 서비스가 각 평가항목을 얼마나 충족하는지 선택해 주십시오.'),
             h('div', { class: 'rate-ends', 'aria-hidden': 'true' }, h('span'), h('div', null, h('span', null, '1 매우 낮음'), h('span', null, '3 보통'), h('span', null, '5 매우 높음'))),
@@ -1019,7 +1025,7 @@
     st.receipt = server ? server.receipt || null : null;
     if (!st.submittedAt) st.editedAfterSubmit = false;
     S.imgKey = res.imgKey || CFG.imgKey || '';
-    S.services = (Array.isArray(res.services) && res.services.length > 0) ? res.services.map(x => Object.assign({}, x, { images: (x.images || []).map(src => ({ src })) })) : (CFG.services || []).map(x => Object.assign({}, x, { images: (x.images || []).map(src => ({ src })) }));
+    const _r2s = CFG.r2Scores || {}; const _mapSvc = x => Object.assign({}, x, { images: (x.images || []).map(src => ({ src })), r2score: _r2s[x.id] }); S.services = (Array.isArray(res.services) && res.services.length > 0) ? res.services.map(_mapSvc) : (CFG.services || []).map(_mapSvc);
     ORDER = shuffled(S.services, hashStr(token));
     st.p3cur = Math.min(st.p3cur || 0, Math.max(0, ORDER.length - 1));
     if (!st.consent) st.step = 'intro';
