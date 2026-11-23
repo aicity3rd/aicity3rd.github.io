@@ -1,4 +1,3 @@
-surveyPeriod: '2026년 11월 24일부터 26일까지'  surveyPeriod: '2026년 11월 24일~26일'
 /* 응답 서버 주소 (구글 앱스 스크립트 웹앱). 개인정보는 들어 있지 않습니다. */
 window.SURVEY_CONFIG = {
   api: 'https://script.google.com/macros/s/AKfycbzMcDsTrEyNkmbYX60C0R9_kywvCkY185VAqnrAN3zJIQPYQfwxgRTT0Xz_MYSiXvc6Fg/exec',
@@ -8,7 +7,7 @@ window.SURVEY_CONFIG = {
   title: 'AI 기반 초연결 지능도시',
   subtitle: '전문가 조사',
   round: 3,
-  surveyPeriod: '2026년 11월 24일부터 26일까지',
+  surveyPeriod: '2026년 11월 24일~26일',
   serviceCount: 40,
   institution: 'AI 기반 초연결 지능도시',
   
