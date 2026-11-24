@@ -809,7 +809,7 @@
     if (IMG_URL.has(name)) return IMG_URL.get(name);
     const p = (async () => {
       const key = await imgKey();
-      const buf = await (await fetch(name, { cache: 'force-cache' })).arrayBuffer();
+      const buf = await (await fetch(name + '?v=20261124-imgfix', { cache: 'force-cache' })).arrayBuffer();
       const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: new Uint8Array(buf, 0, 12) }, key, new Uint8Array(buf, 12));
       return URL.createObjectURL(new Blob([plain], { type: 'image/jpeg' }));
     })();
