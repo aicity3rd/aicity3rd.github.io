@@ -177,6 +177,32 @@
   function blank() {
     return { v: 2, schemaVersion: SCHEMA, consent: false, step: 'intro', p2: {}, p3: {}, p3note: {}, p3view: 'list', p3cur: 0, p3filter: 'all', crAck: false, submittedAt: null, receipt: null, editedAfterSubmit: false, updatedAt: null };
   }
+  const isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
+  const looksState = v => isObj(v) && ('schemaVersion' in v || 'step' in v || 'consent' in v || 'p2' in v || 'p3' in v);
+  function mergeState(base, overlay) {
+    const out = isObj(base) ? Object.assign({}, base) : {};
+    if (!isObj(overlay)) return out;
+    Object.keys(overlay).forEach(k => {
+      const v = overlay[k];
+      if (isObj(v)) out[k] = mergeState(isObj(out[k]) ? out[k] : {}, v);
+      else if (Array.isArray(v)) out[k] = v.slice();
+      else if (v !== undefined) out[k] = v;
+    });
+    return out;
+  }
+  function normalizeState(raw) {
+    if (!isObj(raw)) return {};
+    const chain = []; let cur = raw; let depth = 0;
+    while (looksState(cur) && looksState(cur.responses) && depth < 12) { chain.push(cur); cur = cur.responses; depth++; }
+    chain.push(cur);
+    let merged = {};
+    for (let i = chain.length - 1; i >= 0; i--) {
+      const layer = Object.assign({}, chain[i]); delete layer.responses; delete layer.progress;
+      merged = mergeState(merged, layer);
+    }
+    merged.schemaVersion = SCHEMA;
+    return merged;
+  }
 
   const p1ItemCount = () => CID.filter(id => st.p1[id] && st.p1[id].score).length;
   const p1Count = () => p1ItemCount() + (st.overallScore >= 1 && st.overallScore <= 5 ? 1 : 0);
@@ -1100,13 +1126,13 @@
     if (res.schemaVersion !== SCHEMA) { renderBoot('평가항목 버전이 달라 응답을 불러오지 않았습니다. 새로고침하거나 연구진에 문의해 주십시오.'); return; }
     R = res.respondent;
     OPEN = !!res.open;
-    const server = res.saved && res.saved.schemaVersion === SCHEMA ? res.saved : null;
+    const server = res.saved && res.saved.schemaVersion === SCHEMA ? normalizeState(res.saved) : null;
     const localRead = readLocal(token);
-    const local = localRead && localRead.schemaVersion === SCHEMA ? localRead : null;
+    const local = localRead && localRead.schemaVersion === SCHEMA ? normalizeState(localRead) : null;
     let base = server;
     let pushLocal = false;
     if (local && (!server || String(local.updatedAt || '') > String(server.updatedAt || ''))) { base = local; pushLocal = true; }
-    st = Object.assign(blank(), base || {});
+    st = Object.assign(blank(), normalizeState(base || {}));
     st.submittedAt = server ? server.submittedAt || null : null;
     st.receipt = server ? server.receipt || null : null;
     if (!st.submittedAt) st.editedAfterSubmit = false;
