@@ -425,7 +425,7 @@
         h('section', { class: 'card privacy', 'aria-labelledby': 'pvt' },
           h('h3', { id: 'pvt' }, '개인정보 처리 안내'),
           h('dl', null,
-            h('dt', null, '수집 항목'), h('dd', null, '2차 응답 내용과 응답 시각. 본인 확인에는 1차 조사 때 받은 성명과 휴대폰 번호 뒷 4자리를 쓰며, 새로 받는 개인정보는 없습니다.'),
+            h('dt', null, '수집 항목'), h('dd', null, '3차 응답 내용과 응답 시각. 본인 확인에는 1차 조사 때 받은 성명과 휴대폰 번호 뒷 4자리를 쓰며, 새로 받는 개인정보는 없습니다.'),
             h('dt', null, '이용 목적'), h('dd', null, `${META.project} 전문가 조사(델파이) 결과 분석`),
             h('dt', null, '공개 범위'), h('dd', null, '결과는 통계로만 공개하며 개인별 응답은 공개하지 않습니다.'),
             h('dt', null, '보유 기간'), h('dd', null, META.retention || '연구 종료 후 파기')),
