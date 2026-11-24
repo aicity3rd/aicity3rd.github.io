@@ -613,7 +613,7 @@
     const aw = R2_AVG_W[ci.id] || 0, bw = R2_AVG_W[cj.id] || 0; const myW = R2OWN ? computeAhpWeights(R2OWN.p2) : null; const idxI = CID.indexOf(ci.id), idxJ = CID.indexOf(cj.id); const myA = myW ? myW[idxI] * 100 : 0; const myB = myW ? myW[idxJ] * 100 : 0;
     const maxW = Math.max(aw, bw, myA, myB, 1);
     const mine = R2OWN && R2OWN.p2 ? R2OWN.p2[k] : null;
-    let mineText = '2차 응답 정보 없음'; let avgCompareText = null; if (R && R.name === '고경철') { const biggerIsI = aw >= bw; const bigItem = biggerIsI ? ci : cj; const smallItem = biggerIsI ? cj : ci; const bigW = Math.max(aw, bw), smallW = Math.min(aw, bw); const ratio = smallW > 0 ? bigW / smallW : 1; const inten = Math.max(1, Math.min(9, Math.round(ratio))); const label = inten <= 1 ? '같음' : (INT_NAME[inten] || (inten + '배')); avgCompareText = shortId(bigItem.id) + '가 ' + shortId(smallItem.id) + '보다 약 ' + ratio.toFixed(2) + '배 더 중요 \u2192 AHP 환산 \'' + label + '\' (' + inten + ')'; }
+    let mineText = '2차 응답 정보 없음'; let avgCompareText = null; if (R && R.name === '고경철') { const biggerIsI = aw >= bw; const bigItem = biggerIsI ? ci : cj; const smallItem = biggerIsI ? cj : ci; const bigW = Math.max(aw, bw), smallW = Math.min(aw, bw); const ratio = smallW > 0 ? bigW / smallW : 1; const inten = Math.max(1, Math.min(9, Math.round(ratio))); const label = inten <= 1 ? '같음' : (INT_NAME[inten] || (inten + '배')); avgCompareText = shortId(bigItem.id) + '가 ' + shortId(smallItem.id) + '보다 \'' + label + '\' (' + inten + ')'; }
     if (mine) {
       if (mine.side === 'E') mineText = '같음 (1)';
       else if (mine.side === 'L' || mine.side === 'R') {
@@ -630,7 +630,7 @@
       h('div', { style: { fontSize: '11.5px', fontWeight: '700', color: '#8a93a3', marginBottom: '8px' } }, '참고 · 2차 조사 결과 (다른 위원들 평균 비중 · 나의 2차 응답)'),
       itemBlock(ci, aw, myA),
       itemBlock(cj, bw, myB),
-      h('p', { style: { margin: '8px 0 0', fontSize: '12.5px', color: '#2F7D57', fontWeight: '700' } }, '위원님의 2차 응답: ', mineText), avgCompareText ? h('p', { style: { margin: '6px 0 0', fontSize: '12.5px', color: '#8a4b00', fontWeight: '700' } }, '전체 위원 평균 환산(테스트): ', avgCompareText) : null);
+      avgCompareText ? h('p', { style: { margin: '8px 0 0', fontSize: '12.5px', color: '#8a4b00', fontWeight: '700' } }, '전체 위원 평균(테스트): ', avgCompareText) : null, h('p', { style: { margin: '6px 0 0', fontSize: '12.5px', color: '#2F7D57', fontWeight: '700' } }, '위원님의 2차 응답: ', mineText));
   }
 
   function pairCard(i, j, idx, onChange) {
