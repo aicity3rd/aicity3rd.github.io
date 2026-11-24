@@ -1036,7 +1036,7 @@
       if (e === 'nomatch') { p4.value = ''; p4.focus(); }
     });
     const notice = META.notStarted ? h('p', { class: 'gate-note' }, `지금은 조사 시작 전입니다. ${META.period}에 응답하실 수 있습니다.`)
-      : !META.open ? h('p', { class: 'gate-note' }, '조사가 마감되었습니다. 제출하신 분은 접수 내역을 확인하실 수 있습니다.') : null;
+      : !META.open ? h('p', { class: 'gate-note' }, '초연결지능도시 국책과제의 우수서비스 선정을 위한 Delphi-AHP 분석 3차입니다. 마지막 설문이니 꼭 참여 부탁드립니다.') : null;
     const fact = (k, v) => h('li', null, h('span', { class: 'k' }, k), h('span', { class: 'v' }, v));
     app.replaceChildren(header(), h('main', { id: 'main', tabindex: '-1' }, h('div', { class: 'wrap' },
       h('section', { class: 'card gate gate2' },
