@@ -1017,7 +1017,7 @@
         h('div', null, h('label', { class: 'field-label', for: 'lg-p4' }, '휴대폰 번호 뒷 4자리'), p4)),
       msgEl, btn,
       h('p', { class: 'note' }, '1차 조사 때 적어 주신 성명과 휴대폰 번호로 본인을 확인합니다. 입력한 정보는 확인에만 쓰고 따로 저장하지 않습니다.'),
-      h('p', { class: 'note' }, '응답은 자동 저장됩니다. 한 번에 한 창에서만 응답해 주세요.'));
+      h('p', { class: 'note' }, '응답은 자동 저장됩니다. 한 번에 한 창에서만 응답해 주세요.'), h('p', { class: 'note', style: { marginTop: '10px' } }, '문의: LH토지주택연구원 정채영 jcy8204@gmail.com'));
     form.addEventListener('submit', async ev => {
       ev.preventDefault();
       if (!nm.value.trim() || p4.value.length !== 4) { msgEl.textContent = '성명과 휴대폰 번호 뒷 4자리를 모두 입력해 주십시오.'; (nm.value.trim() ? p4 : nm).focus(); return; }
