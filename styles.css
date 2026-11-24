@@ -496,7 +496,7 @@ footer.foot .wrap { display: flex; gap: 8px 18px; flex-wrap: wrap; }
 /* 입장 화면 시안: 시각물 + 본인 확인 */
 .gate.gate2 { max-width: 1000px; margin: 6vh auto 0; padding: 0; display: grid; grid-template-columns: 1.05fr 1fr; overflow: hidden; }
 .gate-visual { position: relative; color: #fff; padding: 44px 40px 200px; min-height: 540px;
-  background: url('hero.svg') no-repeat center bottom / 100% auto, linear-gradient(165deg, #24435C 0%, #1E3446 52%, #132331 100%); }
+  background: url('imagegen-nairR8S5bFTzhpDm.png') no-repeat center bottom / 100% auto, linear-gradient(165deg, #24435C 0%, #1E3446 52%, #132331 100%); }
 .gate .gv-eyebrow { font-size: 13px; color: #9FE3DF; font-weight: 600; }
 .gate-visual h1 { font-size: 32px; margin: 10px 0 14px; color: #fff; }
 .gate-visual h1:focus { outline: none; box-shadow: none; }
