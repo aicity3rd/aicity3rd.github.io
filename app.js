@@ -576,13 +576,13 @@
     const myW = R2OWN ? computeAhpWeights(R2OWN.p2) : null;
     const myVals = rows.map((r, idx) => myW ? myW[idx] * 100 : 0);
     const maxVal = Math.max.apply(null, rows.map(r => r[2]).concat(myVals).concat([1]));
-    return h('div', { class: 'card r2-weight-summary', style: { marginBottom: '18px', padding: '18px 20px' } },
-      h('h3', { style: { margin: '0 0 6px', fontSize: '17px' } }, '평가항목 가중치 AHP 쌍대비교 결과'),
-      h('p', { class: 'sub', style: { margin: '0 0 14px', color: '#5b6474' } }, '2차 조사(제출 100명 중 일관성 기준 CR≤0.1 충족 65명 통합)에서 산출된 평가항목별 가중치 평균과 위원님이 2차 때 응답하신 개인 가중치입니다. 막대가 길수록 더 중요하게 평가한 항목입니다. 이 결과를 참고하여 본인의 쌍대비교 응답을 이번 3차 조사에서 그대로 유지하실지, 재조정하실지 자유롭게 결정해 주십시오.'),
-      h('div', { style: { display: 'grid', rowGap: '16px' } }, rows.map((r, idx) => h('div', null,
+    return h('div', { class: 'card r2-weight-summary', style: { marginBottom: '18px', padding: '18px 20px' } }, h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: '24px', alignItems: 'flex-start' } },
+      h('div', { style: { flex: '1 1 220px', minWidth: '220px' } }, h('h3', { style: { margin: '0 0 6px', fontSize: '17px' } }, '평가항목 가중치 AHP 쌍대비교 결과'),
+      h('p', { class: 'sub', style: { margin: '0', color: '#5b6474' } }, '2차 조사(제출 100명 중 일관성 기준 CR≤0.1 충족 65명 통합)에서 산출된 평가항목별 가중치 평균과 위원님이 2차 때 응답하신 개인 가중치입니다. 막대가 길수록 더 중요하게 평가한 항목입니다. 이 결과를 참고하여 본인의 쌍대비교 응답을 이번 3차 조사에서 그대로 유지하실지, 재조정하실지 자유롭게 결정해 주십시오.')),
+      h('div', { style: { flex: '1.4 1 300px', minWidth: '280px', display: 'grid', rowGap: '16px' } }, rows.map((r, idx) => h('div', null,
         h('div', { style: { display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' } },
           h('span', { class: 'badge' }, r[0]), h('span', { style: { fontSize: '13.5px', fontWeight: '600' } }, r[1])),
-        cmpBarRow(r[2], myVals[idx], maxVal, v => v.toFixed(1) + '%')))));
+        cmpBarRow(r[2], myVals[idx], maxVal, v => v.toFixed(1) + '%'))))));
   }
 
   function viewP2() {
