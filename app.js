@@ -347,7 +347,7 @@
   }
 
   /* ---------- 화면 이동 ---------- */
-  /* 1부 → 2부 → 3부 순서 잠금: 앞 단계를 모두 응답해야 다음 단계가 열린다 */
+  /* 1부 → 2부 순서 잠금: 앞 단계를 모두 응답해야 다음 단계가 열린다 */
   const GATE_MSG = {
     p2: '1부(평가항목 중요도 재평가)를 먼저 완료해 주십시오. 1부의 비교를 모두 마치시면 2부가 열립니다.'
   };
@@ -927,7 +927,7 @@
       const e = r && r.error;
       subMsg.textContent = e === 'incomplete' ? `아직 빠진 문항이 있습니다 (${(r.miss || []).join(', ')}). 해당 부분을 확인해 주십시오.`
         : e === 'schema_mismatch' || e === 'revision_not_ready' ? '평가항목 버전이 변경되었습니다. 새로고침 후 연구진 안내를 확인해 주십시오.'
-        : e === 'cr_ack' ? '2부 일관성 확인란에 체크해 주십시오.'
+        : e === 'cr_ack' ? '1부 일관성 확인란에 체크해 주십시오.'
         : e === 'closed' ? '조사가 마감되어 제출할 수 없습니다.'
         : e === 'invalid_token' ? '접속 정보가 만료되었습니다. 새로고침 후 다시 들어와 주십시오. 입력 내용은 이 기기에 보관되어 있습니다.'
         : '연결이 원활하지 않아 제출하지 못했습니다. 입력 내용은 저장되어 있으니 잠시 후 다시 눌러 주십시오.';
@@ -943,12 +943,12 @@
 
 
 
-          card('2부 평가항목 중요도', okChip(c2 === PAIRS.length), `${c2}/${PAIRS.length} 비교` + (r ? ` · 일관성 비율 ${r.CR.toFixed(3)} (${r.CR <= 0.1 ? '기준 충족' : '기준 0.1 초과'})` : ''), '2부 보기', () => go('p2'),
+          card('1부 평가항목 중요도', okChip(c2 === PAIRS.length), `${c2}/${PAIRS.length} 비교` + (r ? ` · 일관성 비율 ${r.CR.toFixed(3)} (${r.CR <= 0.1 ? '기준 충족' : '기준 0.1 초과'})` : ''), '1부 보기', () => go('p2'),
             miss2.length ? h('div', { class: 'missing' }, miss2.map(p => h('button', { type: 'button', onclick: () => go('p2', () => jumpPair(pkey(p.i, p.j))) }, `비교 ${p.idx + 1} · ${shortId(CID[p.i])}↔${shortId(CID[p.j])}`))) : null),
-          card('3부 후보 서비스 평가', okChip(c3 === ORDER.length), `${c3}/${ORDER.length} 서비스 완료 · 점수 ${p3Ratings()}/${ORDER.length * N}개 선택`, '3부 보기', () => { st.p3view = 'list'; go('p3'); },
+          card('2부 후보 서비스 평가', okChip(c3 === ORDER.length), `${c3}/${ORDER.length} 서비스 완료 · 점수 ${p3Ratings()}/${ORDER.length * N}개 선택`, '2부 보기', () => { st.p3view = 'list'; go('p3'); },
             miss3.length ? h('div', { class: 'missing' }, miss3.slice(0, 40).map(o => h('button', { type: 'button', onclick: () => openSvc(o.idx) }, `${o.idx + 1}. ${o.s.name} (${svcCount(o.s.id)}/${N})`))) : null)),
         h('section', { class: 'card submit-box' },
-          crBad ? h('label', { class: 'check', for: 'crack' }, ack, h('span', null, '2부 일관성 비율이 0.1을 넘지만, 현재 판단을 유지하고 제출합니다')) : null,
+          crBad ? h('label', { class: 'check', for: 'crack' }, ack, h('span', null, '1부 일관성 비율이 0.1을 넘지만, 현재 판단을 유지하고 제출합니다')) : null,
           submitBtn, subMsg,
           !complete ? h('p', { class: 'note' }, `아직 선택하지 않은 문항이 ${remaining}개 있습니다.`) : null,
           h('p', { class: 'note' }, `제출 후에도 ${META.period || '조사 기간'} 전까지 다시 들어와 수정하고 다시 제출하실 수 있습니다.`))
@@ -990,14 +990,14 @@
       h('tbody', null, rows.map(row => h('tr', null, row.map(x => h('td', null, x)))))));
     return [
       h('h3', null, `${R.name} 위원님 응답 사본 · 접수 ${st.receipt}`),
-      h('h4', null, '1부 평가항목 적절성'),
-      tbl(['수정된 평가항목', '적절성 점수', '보완 의견'], C.map(c => { const a = st.p1[c.id] || {}; return [shortId(c.id) + ' ' + c.name, a.score ? a.score + '점' : '-', a.reason || '']; })),
-      h('p', null, '전체 구성의 적절성: ' + (st.overallScore ? st.overallScore + '점' : '미응답')),
-      h('p', null, '종합의견: ' + (st.p1note || '없음')),
-      h('h4', null, '2부 평가항목 중요도' + (r ? ` · 일관성 비율 ${r.CR.toFixed(3)}` : '')),
+
+
+
+
+      h('h4', null, '1부 평가항목 중요도' + (r ? ` · 일관성 비율 ${r.CR.toFixed(3)}` : '')),
       r ? tbl(['평가항목', '가중치'], CID.map((id, i) => [`${shortId(id)} ${C[i].name}`, `${(r.w[i] * 100).toFixed(1)}%`])) : null,
       tbl(['비교', '응답'], PAIRS.map(([i, j], idx) => { const a = st.p2[pkey(i, j)] || {}; const x = a.side === 'L' ? a.v : a.side === 'R' ? 1 / a.v : 1; return [`${idx + 1}. ${shortId(CID[i])} ↔ ${shortId(CID[j])}`, a.side ? ratioText(i, j, x) : '-']; })),
-      h('h4', null, '3부 후보 서비스 평가'),
+      h('h4', null, '2부 후보 서비스 평가'),
       tbl(['서비스', ...CID.map(shortId)], ORDER.map((s, idx) => [`${idx + 1}. ${s.name}`, ...CID.map(id => (st.p3[s.id] && st.p3[s.id][id]) ? String(st.p3[s.id][id]) : '-')]))
     ];
   }
