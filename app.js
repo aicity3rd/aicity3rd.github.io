@@ -1043,7 +1043,7 @@
         h('div', { class: 'gate-visual' },
           h('p', { class: 'gv-eyebrow' }, `${META.project} · ${META.title}`),
           h('h1', { id: 'pageTitle', tabindex: '-1' }, `${META.round} 전문가 조사`),
-          h('p', { class: 'gv-lead' }, '전문가 의견을 반영해 통합·조정한 4개 평가항목의 적절성과 중요도, 후보 서비스에 대한 의견을 여쭙습니다.'),
+          h('p', { class: 'gv-lead' }, '전문가 의견을 반영해 통합·조정한 4개 평가항목 중요도 비교를 재검토하고 후보 서비스 40종에 대한 재평가를 진행합니다.'),
           h('ul', { class: 'gv-facts' }, fact('조사 기간', META.period), fact('구성', `중요도 재평가 · 후보서비스 ${META.nsvc}종`))),
         h('div', { class: 'gate-form' },
           h('h2', { class: 'gf-title' }, msg ? '나가기 완료' : '본인 확인'),
