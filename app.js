@@ -610,8 +610,8 @@
   }
 
   function pairRef(ci, cj, k) {
-    const aw = R2_AVG_W[ci.id] || 0, bw = R2_AVG_W[cj.id] || 0;
-    const maxW = Math.max(aw, bw, 1);
+    const aw = R2_AVG_W[ci.id] || 0, bw = R2_AVG_W[cj.id] || 0; const myW = R2OWN ? computeAhpWeights(R2OWN.p2) : null; const idxI = CID.indexOf(ci.id), idxJ = CID.indexOf(cj.id); const myA = myW ? myW[idxI] * 100 : 0; const myB = myW ? myW[idxJ] * 100 : 0;
+    const maxW = Math.max(aw, bw, myA, myB, 1);
     const mine = R2OWN && R2OWN.p2 ? R2OWN.p2[k] : null;
     let mineText = '2차 응답 정보 없음';
     if (mine) {
@@ -621,15 +621,15 @@
         mineText = mine.v ? `${shortId(p.id)}가 ${shortId(q.id)}보다 '${INT_NAME[mine.v]}' (${mine.v})` : `${shortId(p.id)}가 더 중요`;
       }
     }
-    const barRow = (item, val, color, trackBg) => h('div', { style: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px' } },
-      h('span', { style: { width: '0', flex: '0 0 42%', flexShrink: '0', fontSize: '12px', color: '#48526a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }, badge(item.id), ' ', item.name),
-      h('div', { style: { flex: '1', height: '10px', background: trackBg, borderRadius: '6px', overflow: 'hidden' } },
-        h('div', { style: { width: Math.max(2, Math.min(100, (val / maxW) * 100)) + '%', height: '100%', background: color, borderRadius: '6px' } })),
-      h('b', { style: { width: '46px', flexShrink: '0', textAlign: 'right', fontSize: '12.5px', color: '#48526a' } }, val.toFixed(1) + '%'));
+    const itemBlock = (item, avgVal, myVal) => h('div', { style: { marginBottom: '10px' } }, h('div', { style: { display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '5px' } }, badge(item.id), h('span', { style: { fontSize: '12.5px', fontWeight: '600', color: '#2b3444' } }, item.name)), cmpBarRow(avgVal, myVal, maxW, v => v.toFixed(1) + '%'));
+
+
+
+
     return h('div', { class: 'card p2-ref', style: { padding: '12px 14px', marginBottom: '10px', background: '#F7F9FC', border: '1px solid #E6EAF1' } },
-      h('div', { style: { fontSize: '11.5px', fontWeight: '700', color: '#8a93a3', marginBottom: '8px' } }, '참고 · 2차 조사 결과 (다른 위원들 평균 비중)'),
-      barRow(ci, aw, '#6b8fd6', '#e7edf8'),
-      barRow(cj, bw, '#6b8fd6', '#e7edf8'),
+      h('div', { style: { fontSize: '11.5px', fontWeight: '700', color: '#8a93a3', marginBottom: '8px' } }, '참고 · 2차 조사 결과 (다른 위원들 평균 비중 · 나의 2차 응답)'),
+      itemBlock(ci, aw, myA),
+      itemBlock(cj, bw, myB),
       h('p', { style: { margin: '8px 0 0', fontSize: '12.5px', color: '#2F7D57', fontWeight: '700' } }, '위원님의 2차 응답: ', mineText));
   }
 
