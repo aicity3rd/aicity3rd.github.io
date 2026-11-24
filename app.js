@@ -256,7 +256,7 @@
     if (!err) { retryN = 0; setSave(dirty ? 'busy' : 'ok'); if (dirty) schedule(800); return; }
     if (err === 'schema_mismatch' || err === 'revision_not_ready') { OPEN = false; dirty = false; renderBoot('수정된 평가항목이 준비 중이거나 버전이 변경되어 저장을 중단했습니다. 입력 내용은 이 기기에 보관되어 있습니다.'); return; }
     if (err === 'closed') { OPEN = false; setSave('closed'); return; }
-    if (err === 'invalid_token') { setSave('err'); return; }
+    if (err === 'invalid_token') { try { sessionStorage.removeItem(SKEY); } catch (e2) { /* 무시 */ } token = null; st = null; dirty = false; renderGate(true); return; }
     dirty = true; retryN++;
     setSave('err');
     schedule(Math.min(30000, 3000 * retryN));
@@ -1110,7 +1110,7 @@
     st.submittedAt = server ? server.submittedAt || null : null;
     st.receipt = server ? server.receipt || null : null;
     if (!st.submittedAt) st.editedAfterSubmit = false;
-    S.imgKey = res.imgKey || CFG.imgKey || '';
+    S.imgKey = res.imgKey || '';
     const _r2s = CFG.r2Scores || {}; const _mapSvc = x => Object.assign({}, x, { images: (x.images || []).map(src => ({ src })), r2score: _r2s[x.id] }); S.services = (Array.isArray(res.services) && res.services.length > 0) ? res.services.map(_mapSvc) : (CFG.services || []).map(_mapSvc);
     ORDER = shuffled(S.services, hashStr(token));
     st.p3cur = Math.min(st.p3cur || 0, Math.max(0, ORDER.length - 1));
