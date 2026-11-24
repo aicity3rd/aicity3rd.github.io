@@ -6,7 +6,7 @@ window.SURVEY_CONFIG = {
   title: 'AI 기반 초연결 지능도시',
   subtitle: '전문가 조사',
   round: 3,
-  surveyPeriod: '2026년 11월 24일~26일',
+  surveyPeriod: '2026년 11월 24일(화)~26일(목)',
   serviceCount: 40,
   institution: 'AI 기반 초연결 지능도시',
 
