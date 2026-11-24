@@ -824,10 +824,10 @@
       doneMsg.replaceChildren(n === N ? h('span', { class: 'chip ok' }, icon('check', { sw: '2.6' }), idx < ORDER.length - 1 ? '이 서비스 평가 완료 · 다음 서비스로 넘어가 주십시오' : '마지막 서비스까지 평가했습니다') : h('span', { class: 'note' }, `${n}/${N}개 항목 선택`));
     };
     const rows = C.map(c => {
-      const cur = st.p3[s.id] && st.p3[s.id][c.id];
+      const cur = st.p3[s.id] && st.p3[s.id][c.id]; const avgV = s.r2score ? (Number(s.r2score[shortId(c.id)]) || 0) : 0; const myV = (R2OWN && R2OWN.p3[s.id] && R2OWN.p3[s.id][c.id] != null) ? Number(R2OWN.p3[s.id][c.id]) : 0; const ref = s.r2score ? h('div', { style: { margin: '0 0 10px', padding: '12px 14px', background: '#F3F6FB', borderRadius: '10px', maxWidth: '100%', boxSizing: 'border-box', overflow: 'hidden' } }, h('div', { style: { fontSize: '12.5px', lineHeight: '1.3', marginBottom: '8px', fontWeight: '700' } }, badge(c.id), ' ', c.name, h('span', { style: { fontWeight: '400', color: '#8a93a3' } }, ' · 2차 설문 결과')), cmpBarRow(avgV, myV, 5, v => v ? v.toFixed(1) + '점' : '-')) : null;
       return h('fieldset', { class: 'rrow' },
         h('legend', { class: 'sr' }, `${shortId(c.id)} ${c.name}`),
-        h('div', { class: 'rrow-in' },
+        ref, h('div', { class: 'rrow-in' },
           h('span', { class: 'rlabel', 'aria-hidden': 'true' }, badge(c.id), h('span', null, c.name)),
           h('div', { class: 'opts' }, [1, 2, 3, 4, 5].map(v => h('label', { class: 'opt' },
             h('input', { type: 'radio', name: `p3-${s.id}-${c.id}`, value: String(v), checked: cur === v, onchange: () => { st.p3[s.id] = Object.assign({}, st.p3[s.id], { [c.id]: v }); persist(); updDone(); } }),
@@ -876,15 +876,15 @@
         h('div', { class: 'svc svc-rich' },
           h('article', { class: 'card svc-card', 'aria-labelledby': 'pageTitle' }, band, h('div', { class: 'svc-body' }, body)),
           h('section', { class: 'card rate', 'aria-labelledby': 'rate-h' },
-            s.r2score ? h('div', { class: 'r2-score-box', style: { margin: '0 0 18px', padding: '14px 16px', background: '#F3F6FB', borderRadius: '10px', maxWidth: '100%', boxSizing: 'border-box', overflow: 'hidden' } },
-              h('h4', { style: { margin: '0 0 10px', fontSize: '14px' } }, '2차 설문 결과'),
-              h('div', { style: { display: 'grid', rowGap: '12px' } }, C.map(c => {
-                const avgV = Number(s.r2score[shortId(c.id)]) || 0;
-                const myV = (R2OWN && R2OWN.p3[s.id] && R2OWN.p3[s.id][c.id] != null) ? Number(R2OWN.p3[s.id][c.id]) : 0;
-                return h('div', null,
-                  h('div', { style: { fontSize: '12.5px', lineHeight: '1.3', marginBottom: '5px' } }, h('span', { class: 'badge' }, shortId(c.id)), ' ', c.name),
-                  cmpBarRow(avgV, myV, 5, v => v ? v.toFixed(1) + '점' : '-'));
-              }))) : null,
+            null,
+
+
+
+
+
+
+
+
             h('h3', { id: 'rate-h' }, '평가항목별 점수'),
             h('p', { class: 'sub' }, '카드 내용을 보고 이 서비스가 각 평가항목을 얼마나 충족하는지 선택해 주십시오.'),
             h('div', { class: 'rate-ends', 'aria-hidden': 'true' }, h('span'), h('div', null, h('span', null, '1 매우 낮음'), h('span', null, '3 보통'), h('span', null, '5 매우 높음'))),
