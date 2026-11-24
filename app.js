@@ -902,11 +902,11 @@
   /* ---------- 확인·제출 ---------- */
   function viewReview() {
     const r = ahp();
-    const c1 = p1Count(), c2 = p2Count(), c3 = p3Done();
-    const miss1 = C.filter(c => !(st.p1[c.id] && st.p1[c.id].score));
+    const c2 = p2Count(), c3 = p3Done();
+
     const miss2 = PAIRS.map(([i, j], idx) => ({ i, j, idx })).filter(p => !pairDone(pkey(p.i, p.j)));
     const miss3 = ORDER.map((s, idx) => ({ s, idx })).filter(o => svcCount(o.s.id) < N);
-    const remaining = (P1TOTAL() - c1) + (PAIRS.length - c2) + (ORDER.length * N - p3Ratings());
+    const remaining = (PAIRS.length - c2) + (ORDER.length * N - p3Ratings());
     const crBad = r && r.CR > 0.1;
     const ack = h('input', { type: 'checkbox', id: 'crack', checked: !!st.crAck });
     const complete = allDone();
@@ -938,11 +938,11 @@
     const okChip = done => h('span', { class: 'chip ' + (done ? 'ok' : 'warn') }, done ? '완료' : '미완료');
     return {
       body: [
-        pageHead('4 · 확인 및 제출', '응답 내용을 확인하고 제출해 주십시오', st.submittedAt && st.editedAfterSubmit ? '제출 후 수정한 내용이 있습니다. 다시 제출하셔야 수정 내용이 반영됩니다.' : '모든 문항에 응답하시면 제출할 수 있습니다. 빠진 문항은 아래 버튼을 눌러 바로 이동하실 수 있습니다.'),
+        pageHead('3 · 확인 및 제출', '응답 내용을 확인하고 제출해 주십시오', st.submittedAt && st.editedAfterSubmit ? '제출 후 수정한 내용이 있습니다. 다시 제출하셔야 수정 내용이 반영됩니다.' : '모든 문항에 응답하시면 제출할 수 있습니다. 빠진 문항은 아래 버튼을 눌러 바로 이동하실 수 있습니다.'),
         h('div', { class: 'rv' },
-          card('1부 수정 항목·전체 구성 적절성', okChip(c1 === P1TOTAL()), p1ItemCount() + '/' + N + ' 항목 · 전체 구성 ' + (st.overallScore ? st.overallScore + '점' : '미응답'), '1부 보기', () => p1Go(1),
-            [miss1.length ? h('div', { class: 'missing' }, miss1.map(c => h('button', { type: 'button', onclick: () => { st.p1stage = 1; go('p1', () => { const el = document.getElementById('p1-' + c.id); if (el) el.scrollIntoView({ block: 'start' }); }); } }, shortId(c.id) + ' ' + c.name))) : null,
-              !st.overallScore ? h('div', { class: 'missing' }, h('button', { type: 'button', onclick: () => p1Go(1) }, '전체 구성의 적절성')) : null]),
+
+
+
           card('2부 평가항목 중요도', okChip(c2 === PAIRS.length), `${c2}/${PAIRS.length} 비교` + (r ? ` · 일관성 비율 ${r.CR.toFixed(3)} (${r.CR <= 0.1 ? '기준 충족' : '기준 0.1 초과'})` : ''), '2부 보기', () => go('p2'),
             miss2.length ? h('div', { class: 'missing' }, miss2.map(p => h('button', { type: 'button', onclick: () => go('p2', () => jumpPair(pkey(p.i, p.j))) }, `비교 ${p.idx + 1} · ${shortId(CID[p.i])}↔${shortId(CID[p.j])}`))) : null),
           card('3부 후보 서비스 평가', okChip(c3 === ORDER.length), `${c3}/${ORDER.length} 서비스 완료 · 점수 ${p3Ratings()}/${ORDER.length * N}개 선택`, '3부 보기', () => { st.p3view = 'list'; go('p3'); },
@@ -951,7 +951,7 @@
           crBad ? h('label', { class: 'check', for: 'crack' }, ack, h('span', null, '2부 일관성 비율이 0.1을 넘지만, 현재 판단을 유지하고 제출합니다')) : null,
           submitBtn, subMsg,
           !complete ? h('p', { class: 'note' }, `아직 선택하지 않은 문항이 ${remaining}개 있습니다.`) : null,
-          h('p', { class: 'note' }, `제출 후에도 마감(2026-11-19 23:59) 전까지 다시 들어와 수정하고 다시 제출하실 수 있습니다.`))
+          h('p', { class: 'note' }, `제출 후에도 ${META.period || '조사 기간'} 전까지 다시 들어와 수정하고 다시 제출하실 수 있습니다.`))
       ],
       nav: navbar({ label: '이전: 서비스 평가', on: () => { st.p3view = 'list'; go('p3'); } }, null, () => [complete ? '모든 문항 응답 완료' : `남은 문항 ${remaining}개`])
     };
