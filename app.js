@@ -351,7 +351,7 @@
   const GATE_MSG = {
     p2: '1부(평가항목 중요도 재평가)를 먼저 완료해 주십시오. 1부의 비교를 모두 마치시면 2부가 열립니다.'
   };
-  function gate(step) {
+  const ADMIN_NAMES = ['정채영', '최정은']; function isAdminUser() { return !!(R && ADMIN_NAMES.indexOf(R.name) !== -1); } function gate(step) { if (isAdminUser()) return step;
     if (step === 'p3' || step === 'review') {
       if (p2Count() < PAIRS.length) return 'p2';
     }
