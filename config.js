@@ -11,7 +11,7 @@ window.SURVEY_CONFIG = {
   institution: 'AI 기반 초연결 지능도시',
 
   /* 2차 전문가 조사 서비스 카드 원문 데이터 (2차와 동일, 재평가용) */
-  imgKey: 'LiK857SuNVlDuCkW8gVzl8Ls5xmovvNjtHmkjrYaubo=',
+
   services: [
   {
     "id": "S01",
